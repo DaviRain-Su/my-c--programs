@@ -69,5 +69,3 @@ void writeBin(const string filename, const uint64_t writeSize, vector<T>& vec){
 }
 
 #endif
-
-

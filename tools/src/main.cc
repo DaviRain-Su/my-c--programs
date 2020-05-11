@@ -12,7 +12,6 @@
 #include <iomanip> //setiosflags
 #include <algorithm>
 
-//using std::swap;
 using std::vector;
 using std::endl;
 using std::cout;
@@ -187,6 +186,27 @@ void writeBin(const std::string filename,
     outfile.close();
 }
 
+/*============================================
+ *
+ * 函数名：writeBin
+ *
+ * 参数: const string filename;
+ *      vector<t_DataType>& DataTypeVec1;
+ *      vector<t_DataType>& DataTypeVec2;
+ *      vector<t_DataType>& DataTypeVec3
+ *      const DataSize datasize = 2048
+ * 功能：
+ *  将输入的三个t_DataType向量的数据写入到文件中，
+ *  以交错的形式存储数据，例如先存储v1中的item, 紧跟着存储
+ *  v2的item, 最后是v3的item.(这里做了一些变换，将输入的数据，以小端明文的方式存储下来)
+ *
+ *  返回值：void
+ *  
+ *  抛出异常：
+ *
+ *  作者：suyinrong 2020/3/16
+ *
+ *============================================*/
 template<typename t_DataType, typename DataSize = int>
 void writeBin(const std::string filename, 
               std::vector<t_DataType>& DataTypeVec1, 
@@ -206,46 +226,7 @@ void writeBin(const std::string filename,
         MakeHexFloat<float, char>(DataTypeVec1[i], temp1);
         MakeHexFloat<float, char>(DataTypeVec2[i], temp2);
         MakeHexFloat<float, char>(DataTypeVec3[i], temp3);
-#if 0
-        for(auto item : temp1)
-        {
-            std::cout << item << " ";
-        }
-        std::cout << std::endl;
-#endif 
 
-#if 0
-        for(size_t i = 0; i < temp1.size(); i++)
-        {
-            if(temp1[i] < 16)
-                cout  << std::setiosflags(std::ios::uppercase) << std::hex << "0" << (int)temp1[i] << "";
-            else 
-                cout << std::setiosflags(std::ios::uppercase) << std::hex << (int)temp1[i] << "";
-        }
-        for(size_t i = 0; i < temp2.size(); i++)
-        {
-            if(temp2[i] < 16)
-                cout << std::setiosflags(std::ios::uppercase) << std::hex << "0" << (int)temp2[i] << "";
-            else 
-                cout << std::setiosflags(std::ios::uppercase) << std::hex << (int)temp2[i] << "";
-        }
-        dec(cout);
-        cout << endl;
-#endif
-
-#if 0
-        char t1[4];
-        char t2[4];
-        for(int i = 0; i < 4 ; i++)
-        {
-            t1[i] = temp1[i];
-            t2[i] = temp2[i];
-        }
-        outfile.write(t1, 4);
-        outfile.write(t2, 4);
-#endif 
-//        SwapVec<char>(temp1);
-//        SwapVec<char>(temp2);
         outfile.write(reinterpret_cast<char*>(temp1.data()), temp1.size());
         outfile.write(reinterpret_cast<char*>(temp2.data()), temp2.size());
         outfile.write(reinterpret_cast<char*>(temp3.data()), temp3.size());
@@ -255,28 +236,32 @@ void writeBin(const std::string filename,
 
 int main()
 {
-
+    //设定的生成floatSize的大小
     const int FloatSize = 2048;
+    //生成范围的开始
     const float Begin = -1.0;
+    //生成范围的结束
     const float End = 1.0;
+    
+    //生成三个向量
     vector<float> A;
     A = GenerateFloat<float>(FloatSize, Begin, End);
     sleep(10);
-//    Print<float>(A);
+    
     vector<float> B;
     B = GenerateFloat<float>(FloatSize, Begin, End);
     sleep(10);
-//    Print<float>(B);
+    
     vector<float> C;
     C = GenerateFloat<float>(FloatSize, Begin, End);
     
+    //生成的文件名
     const std::string filenameAB = "floatAB.bin";
     const std::string filenameABC = "floatABC.bin";
+    
     writeBin<float>(filenameAB, A, B, FloatSize);
     writeBin<float>(filenameABC, A, B, C, FloatSize);
 
-    //Print<float>(result);
-    //cout << RAND_MAX << endl;
 
     return 0;
 }

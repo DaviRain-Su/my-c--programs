@@ -10,6 +10,7 @@ using std::uniform_real_distribution;
 
 int main()
 {
+
     default_random_engine e(time(NULL));
     uniform_real_distribution<float> Unifom(-1.0, 1.0);
     
